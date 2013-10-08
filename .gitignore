@@ -1,2 +1,5 @@
+*.ropeproject
 *.idea
 *.pyc
+docs/build*
+*.egg-info
