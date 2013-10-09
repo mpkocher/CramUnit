@@ -8,10 +8,11 @@ except ImportError:
 version = __import__('cram_unit').get_version()
 
 _REQUIREMENTS_FILE = 'REQUIREMENTS.txt'
+_README = 'README.md'
 
 
 def _get_description():
-    with open('README.md') as f:
+    with open(_get_local_file(_README)) as f:
         _long_description = f.read()
     return _long_description
 
@@ -22,8 +23,7 @@ def _get_local_file(file_name):
 
 def _get_requirements(file_name):
     with open(file_name, 'r') as f:
-        lines = f.readlines()
-    reqs = [l for l in lines if not l.startswith("#")]
+        reqs = [line for line in f if not line.startswith("#")]
     return reqs
 
 
@@ -35,7 +35,7 @@ setup(
     author='mpkocher',
     author_email='mkocher@pacificbiosciences.com',
     url="http://github.com/mpkocher/CramUnit",
-    download_url='https://github.com/mpkocher/CramUnit/tarball/0.5',
+    download_url='https://github.com/mpkocher/CramUnit/tarball/0.6',
     description='Tool to create Unittests/Xunit output from cram (*.t) tests.',
     scripts=['bin/run_cram_unit.py'],
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),
