@@ -21,21 +21,12 @@ import nose
 
 import cram_unit
 
-try:
-    #this isn't explicitly used here, but subprocess.Process will call cram.
-    # this is essentially a `which cram`
-    import cram
-except ImportError:
-    msg = "Unable to find cram. Please install cram."
-    sys.stderr.write(msg + "\n")
-    sys.exit(-1)
-
 _version = cram_unit.get_version()
 
 log = logging.getLogger(__name__)
 
 
-def _run_cmd(cmd):
+def run_command(cmd):
     started_at = time.time()
 
     args = shlex.split(cmd)
@@ -68,17 +59,23 @@ def _run_cmd(cmd):
     return returncode, stderr, stdout
 
 
-def _wrapper(file_name):
+def _wrapper(file_name, verbose=False):
     msg = "Running cram on file_name {f}".format(f=file_name)
 
     # Don't use itertools.wrap. Need to explicitly set the doc string.
     def _runner(self):
-        cmd = "cram {f}".format(f=file_name)
+        verbose_str = ' --verbose ' if verbose else ' '
+        cmd = "cram {v} {f}".format(f=file_name, v=verbose_str)
 
-        rcode, sterr, stdout = _run_cmd(cmd)
+        rcode, stderr, stdout = run_command(cmd)
         error_msg = "Cram task of {f} was UNSUCCESSFUL.".format(f=file_name)
 
         self.assertTrue(rcode == 0, error_msg)
+        if rcode != 0:
+            log.error("cmd failed with return code {r}".format(r=rcode))
+            log.error("cmd '{c}' failed ".format(c=cmd))
+            log.error(stderr)
+            log.error(stdout)
 
         #log.info("Mock running of cmd {c}".format(c=cmd))
         log.info(msg)
@@ -121,6 +118,8 @@ class CramUnitTest(unittest.TestCase):
     CRAM_FILES = None
     # The test names/methods can be prefixed e.g, test_mytest_{cram_file_name}
     CRAM_PREFIX = None
+    # Pass --verbose to cram
+    CRAM_VERBOSE = False
 
     @classmethod
     def monkey_patch(cls):
@@ -137,7 +136,7 @@ class CramUnitTest(unittest.TestCase):
                     name = "test_{n}".format(n=cram_file_name)
 
                 # Dynamically Add method
-                f = _wrapper(file_name)
+                f = _wrapper(file_name, verbose=cls.CRAM_VERBOSE)
                 m = types.MethodType(f, None, cls)
 
                 log.info("Adding method {m} to cls {c} with {n}".format(m=m, c=cls.__name__, n=name))
@@ -175,14 +174,17 @@ def _run_suite(suite, xunit_file):
     return True
 
 
-def run(test_files, xunit_file_name, debug=False, prefix=None):
+def run(test_files, xunit_file_name, debug=False, prefix=None, verbose=False):
     """Call a cram subprocess."""
 
     test_cls = CramUnitTest
     test_cls.CRAM_FILES = test_files
 
-    if prefix:
+    if isinstance(prefix, basestring):
         test_cls.CRAM_PREFIX = prefix
+
+    test_cls.CRAM_DEBUG = debug
+    test_cls.CRAM_VERBOSE = verbose
 
     test_cls.monkey_patch()
     log.info("Files defined on {m}".format(m=test_cls.CRAM_FILES))

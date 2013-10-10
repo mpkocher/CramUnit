@@ -36,9 +36,12 @@ def _get_parser():
 
     p.add_argument('-x', dest='xunit_file', default="cram_xunit.xml",
                    help="Name of file to write Xunit.xml output to.")
+
     p.add_argument("--cram_prefix", default=None,
                    help="Prefix that will be added to the test case name. \
                    (e.g., test_{PREFIX}_{CRAM_FILE})")
+    p.add_argument("--verbose", action='store_true',
+                   help="pass verbose option to cram")
 
     return p
 

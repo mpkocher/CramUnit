@@ -1,2 +1,3 @@
 cram
 nose
+xmlbuilder
