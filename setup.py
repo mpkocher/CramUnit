@@ -35,7 +35,7 @@ setup(
     author='mpkocher',
     author_email='mkocher@pacificbiosciences.com',
     url="http://github.com/mpkocher/CramUnit",
-    download_url='https://github.com/mpkocher/CramUnit/tarball/0.7',
+    download_url='https://github.com/mpkocher/CramUnit/tarball/0.8',
     description='Tool to create Unittests/Xunit output from cram (*.t) tests.',
     scripts=['bin/run_cram_unit.py'],
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),
