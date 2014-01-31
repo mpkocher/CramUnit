@@ -62,20 +62,24 @@ def run_command(cmd):
 def _wrapper(file_name, verbose=False):
     msg = "Running cram on file_name {f}".format(f=file_name)
 
-    # Don't use itertools.wrap. Need to explicitly set the doc string.
     def _runner(self):
+        """The function that will be bolted on to the UnitTestCase"""
+
         verbose_str = ' --verbose ' if verbose else ' '
         cmd = "cram {v} {f}".format(f=file_name, v=verbose_str)
 
         rcode, stderr, stdout = run_command(cmd)
         error_msg = "Cram task of {f} was UNSUCCESSFUL.".format(f=file_name)
 
-        self.assertTrue(rcode == 0, error_msg)
         if rcode != 0:
             log.error("cmd failed with return code {r}".format(r=rcode))
             log.error("cmd '{c}' failed ".format(c=cmd))
             log.error(stderr)
             log.error(stdout)
+            sys.stderr.write(stderr + "\n")
+            error_msg += "\n" + stderr
+
+        self.assertTrue(rcode == 0, error_msg)
 
         #log.info("Mock running of cmd {c}".format(c=cmd))
         log.info(msg)
@@ -162,7 +166,8 @@ def _run_suite(suite, xunit_file):
     """
     to_exit = False
 
-    env = {"NOSE_XUNIT_FILE": xunit_file, "NOSE_WITH_XUNIT": 1,
+    env = {"NOSE_XUNIT_FILE": xunit_file,
+           "NOSE_WITH_XUNIT": 1,
            'NOSE_VERBOSE': 1}
 
     # Using itertools here is the magic that makes the Xunit plugins and
