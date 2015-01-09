@@ -4,4 +4,4 @@ python:
 # command to install dependencies
 install: "pip install -r REQUIREMENTS.txt"
 # command to run tests
-script: "nosetests --verbose --logging-conf log_nose.cfg tests"
+script: "nosetests --verbose tests"
