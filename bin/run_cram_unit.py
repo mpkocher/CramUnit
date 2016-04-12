@@ -34,7 +34,7 @@ def _get_parser():
     p.add_argument("--debug", action="store_true",
                    help='Turn on debug mode and log to stdout.')
 
-    p.add_argument('-x', dest='xunit_file', default="cram_xunit.xml",
+    p.add_argument('-x', "--xunit-file", dest='xunit_file', default="cram_xunit.xml",
                    help="Name of file to write Xunit.xml output to.")
 
     p.add_argument("--cram_prefix", default=None,

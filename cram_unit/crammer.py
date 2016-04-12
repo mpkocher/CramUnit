@@ -171,8 +171,9 @@ def _run_suite(suite, xunit_file):
            'NOSE_VERBOSE': 1}
 
     # Using itertools here is the magic that makes the Xunit plugins and
-    # the test cases to work as expected.
-    nx = nose.core.main(env=env, suite=itertools.chain(suite), exit=to_exit)
+    # the test cases to work as expected.  We need to santize argv as well
+    # to suppress the '-x' argument if it was used.
+    nx = nose.core.run(env=env, argv=["cram_unit", "--verbose"], suite=itertools.chain(suite))
 
     log.info("Nose output {o}".format(o=nx))
 
